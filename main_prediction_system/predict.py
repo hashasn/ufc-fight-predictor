@@ -1,3 +1,4 @@
+import os
 import json
 import joblib
 import numpy as np
@@ -21,7 +22,7 @@ PREPROCESSOR_PATH = f"{ARTIFACT_DIR}/preprocessor.joblib"
 FEATURE_COLS_PATH = f"{ARTIFACT_DIR}/feature_cols.json"
 CONFIG_PATH = f"{ARTIFACT_DIR}/config.json"
 
-INPUT_CSV = "../future-card-prediction/upcoming_new.csv"      # can be compact OR full fight-card format
+INPUT_CSV = "../future_card_prediction/upcoming_new.csv"      # can be compact OR full fight-card format
 OUTPUT_CSV = "predictions.csv"
 
 
@@ -52,17 +53,28 @@ class UFCNet(nn.Module):
 # Artifact loading
 # =========================================================
 
-def load_artifacts():
-    with open(FEATURE_COLS_PATH, "r") as f:
+def load_artifacts(artifact_dir=ARTIFACT_DIR):
+    """
+    Load the trained model + preprocessor + metadata from `artifact_dir`.
+
+    Accepts a directory so callers (e.g. the CLI) can pass an absolute path
+    instead of relying on the module-level relative constants.
+    """
+    feature_cols_path = os.path.join(artifact_dir, "feature_cols.json")
+    config_path = os.path.join(artifact_dir, "config.json")
+    preprocessor_path = os.path.join(artifact_dir, "preprocessor.joblib")
+    model_path = os.path.join(artifact_dir, "ufc_nn_model.pt")
+
+    with open(feature_cols_path, "r") as f:
         feature_cols = json.load(f)
 
-    with open(CONFIG_PATH, "r") as f:
+    with open(config_path, "r") as f:
         config = json.load(f)
 
-    preprocessor = joblib.load(PREPROCESSOR_PATH)
+    preprocessor = joblib.load(preprocessor_path)
 
     model = UFCNet(input_dim=config["input_dim"])
-    state_dict = torch.load(MODEL_PATH, map_location="cpu")
+    state_dict = torch.load(model_path, map_location="cpu")
     model.load_state_dict(state_dict)
     model.eval()
 

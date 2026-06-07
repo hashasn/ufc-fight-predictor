@@ -55,7 +55,7 @@ def set_seed(seed=42):
 # Train/test split
 # =========================================================
 
-def chronological_split_3way(paired, feature_cols, test_size=0.2, val_size=0.2):
+def chronological_split_3way(paired, feature_cols, test_size=0.2, val_size=0.2, output_dir="."):
     """
     Split by fight_id chronologically into:
         train -> oldest fights
@@ -103,9 +103,10 @@ def chronological_split_3way(paired, feature_cols, test_size=0.2, val_size=0.2):
     })
 
     test_export = test_export.drop_duplicates(subset=["fight_id"])
-    test_export.to_csv("test_fights_to_scrape.csv", index=False)
+    test_fights_path = os.path.join(output_dir, "test_fights_to_scrape.csv")
+    test_export.to_csv(test_fights_path, index=False)
 
-    print(f"Saved {len(test_export)} unique test fights to test_fights_to_scrape.csv")
+    print(f"Saved {len(test_export)} unique test fights to {test_fights_path}")
     
 
     return (
@@ -445,13 +446,13 @@ def save_artifacts(
 # Main
 # =========================================================
 
-def main():
+def main(data_path=DATA_PATH, artifact_dir=ARTIFACT_DIR):
     set_seed(RANDOM_SEED)
 
     # ---------------------------------
     # Load raw data
     # ---------------------------------
-    df_raw = pd.read_csv(DATA_PATH)
+    df_raw = pd.read_csv(data_path)
     print("Loaded rows:", len(df_raw))
     print("Loaded columns:", len(df_raw.columns))
 
@@ -488,6 +489,7 @@ def main():
         feature_cols=feature_cols,
         test_size=TEST_SIZE,
         val_size=VAL_SIZE,
+        output_dir=artifact_dir,
     )
 
     # print("Before symmetry augmentation:")
@@ -572,7 +574,7 @@ def main():
     # Save artifacts
     # ---------------------------------
     config = {
-        "data_path": DATA_PATH,
+        "data_path": data_path,
         "base_elo": BASE_ELO,
         "elo_k": ELO_K,
         "rolling_window": ROLLING_WINDOW,
@@ -595,7 +597,7 @@ def main():
         history=history,
         metrics=metrics,
         config=config,
-        artifact_dir=ARTIFACT_DIR,
+        artifact_dir=artifact_dir,
     )
 
     # Save test predictions for analysis
@@ -607,8 +609,9 @@ def main():
         "actual": y_test_np
     })
 
-    pred_df.to_csv("test_predictions.csv", index=False)
-    print("Saved test predictions to test_predictions.csv")
+    test_predictions_path = os.path.join(artifact_dir, "test_predictions.csv")
+    pred_df.to_csv(test_predictions_path, index=False)
+    print("Saved test predictions to", test_predictions_path)
 
 
     

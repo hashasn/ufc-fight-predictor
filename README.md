@@ -20,10 +20,9 @@ Enter the names of two fighters and receive:
 Example:
 
 ```text
-Islam Makhachev: 72.4%
-Charles Oliveira: 27.6%
-
-Predicted Winner: Islam Makhachev
+Ilia Topuria            60.0%
+Arman Tsarukyan         40.0%
+Predicted winner: Ilia Topuria
 ```
 
 ### Display Future Predictions

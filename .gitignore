@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual environments
+venv/
+.env
+
+# Model artifacts
+artifacts/
+*.pt
+*.joblib
+
+# Generated outputs
+test_predictions.csv
+test_fights_to_scrape.csv
+predictions.csv
+
+# Mac
+.DS_Store
+
+# Jupyter
+.ipynb_checkpoints/
+
+# VS Code
+.vscode/
